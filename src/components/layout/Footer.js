@@ -10,6 +10,7 @@ function Footer() {
                     <a
                         href="https://www.linkedin.com/in/mpatrickaires/"
                         target="_blank"
+                        rel="noreferrer"
                     >
                         <FaLinkedin />
                     </a>
@@ -18,6 +19,7 @@ function Footer() {
                     <a
                         href="https://www.github.com/mpatrickaires"
                         target="_blank"
+                        rel="noreferrer"
                     >
                         <FaGithub />
                     </a>
