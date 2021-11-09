@@ -59,7 +59,7 @@
     align-items: center;
 }
 
-.project_card_actions a, 
+.project_card_actions a,
 .project_card_actions button {
     text-decoration: none;
     border: none;
@@ -84,4 +84,5 @@
 .project_card_actions button:hover {
     background-color: #222;
     color: #ffbb33;
+    padding: 0.6em 1.5em;
 }
