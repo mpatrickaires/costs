@@ -31,8 +31,15 @@
         "id": "4",
         "name": "Planejamento"
       },
-      "cost": 0,
-      "services": [],
+      "cost": 1000,
+      "services": [
+        {
+          "name": "Contratar Programador PHP",
+          "cost": "1000",
+          "description": "Desenvolver um sistema de envio de e-mail",
+          "id": "6ed3bc2c-6a0b-4edd-b335-aae6cf112913"
+        }
+      ],
       "id": 2
     },
     {
