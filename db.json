@@ -2,13 +2,26 @@
   "projects": [
     {
       "name": "Projeto Atualizado",
-      "budget": "9000",
+      "budget": "200",
       "category": {
         "id": "1",
         "name": "Infra"
       },
-      "cost": 0,
-      "services": [],
+      "cost": 199,
+      "services": [
+        {
+          "name": "Serviço Teste 1",
+          "cost": "100",
+          "description": "Faz isso aqui 1",
+          "id": "29720eed-4877-4032-8f3f-fc529dcfbd5d"
+        },
+        {
+          "name": "Serviço Teste 2",
+          "cost": "99",
+          "description": "Faz isso aqui 2",
+          "id": "c061d9f9-4180-4544-9f33-b3f67a62e6c0"
+        }
+      ],
       "id": 1
     },
     {
