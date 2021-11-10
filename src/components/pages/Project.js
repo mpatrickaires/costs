@@ -20,6 +20,8 @@ function Project() {
     const [showServiceForm, setShowServiceForm] = useState(false);
     const [message, setMessage] = useState();
     const [messageType, setMessageType] = useState();
+    const [messageService, setMessageService] = useState();
+    const [messageServiceType, setMessageServiceType] = useState();
 
     useEffect(() => {
         setTimeout(() => {
@@ -38,15 +40,35 @@ function Project() {
         }, 300);
     }, [id]);
 
-    function editPost(project) {
-        // Necessário para exibir mais de uma vez o componente de mensagem quando não há alteração na mensagem exibida
-        setMessage('');
+    // ENUM
+    const MessageCategory = {
+        PROJECT: 'project',
+        SERVICE: 'service',
+    };
 
+    function editMessage(messageCategory, text, success) {
+        let type = success ? 'success' : 'error';
+
+        switch (messageCategory) {
+            case MessageCategory.PROJECT:
+                setMessage(text);
+                setMessageType(type);
+                break;
+
+            case MessageCategory.SERVICE:
+                setMessageService(text);
+                console.log(messageCategory, text, type);
+                setMessageServiceType(type);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    function editPost(project) {
         if (project.budget < project.cost) {
-            setMessage(
-                'O orçamento não pode ser menor que o custo do projeto!'
-            );
-            setMessageType('error');
+            editMessage(MessageCategory.PROJECT, 'O orçamento não pode ser menor que o custo do projeto!', false);
             return false;
         }
 
@@ -61,8 +83,7 @@ function Project() {
             .then((data) => {
                 setProject(data);
                 setShowProjectForm(false);
-                setMessage('Projeto atualizado!');
-                setMessageType('success');
+                editMessage(MessageCategory.PROJECT, 'Projeto atualizado!', true);
             })
             .catch((err) => console.log(err));
     }
@@ -72,8 +93,6 @@ function Project() {
     }
 
     function createService(project) {
-        setMessage('');
-
         const lastService = project.services[project.services.length - 1];
 
         lastService.id = uuidv4();
@@ -83,8 +102,7 @@ function Project() {
         const newCost = parseFloat(project.cost) + parseFloat(lastServiceCost);
 
         if (newCost > parseFloat(project.budget)) {
-            setMessage('Orçamento ultrapassado! Verifique o valor do serviço.');
-            setMessageType('error');
+            editMessage(MessageCategory.SERVICE, 'Orçamento ultrapassado! Verifique o valor do serviço.', false)
             project.services.pop();
             return false;
         }
@@ -101,25 +119,43 @@ function Project() {
             .then((resp) => resp.json())
             .then((data) => {
                 setShowServiceForm(false);
+                editMessage(MessageCategory.SERVICE, 'Serviço criado com sucesso!', true)
             })
             .catch((err) => console.log(err));
     }
 
-    function removeService() {}
+    function removeService(id, cost) {
+        const servicesUpdated = project.services.filter(
+            (service) => service.id !== id
+        );
 
-    function toggleProjectForm() {
-        setShowProjectForm(!showProjectForm);
-    }
+        const projectUpdated = project;
 
-    function toggleServiceForm() {
-        setShowServiceForm(!showServiceForm);
+        projectUpdated.services = servicesUpdated;
+        projectUpdated.cost =
+            parseFloat(projectUpdated.cost) - parseFloat(cost);
+
+        fetch(`http://localhost:5000/projects/${projectUpdated.id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(projectUpdated),
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                setProject(projectUpdated);
+                setServices(servicesUpdated);
+                editMessage(MessageCategory.SERVICE, 'Serviço removido com sucesso!', true);
+            })
+            .catch((err) => console.log(err));
     }
 
     return (
         <>
             {project.name ? (
                 <div className={styles.project_details}>
-                    {message && <Message type={messageType} msg={message} />}
+                    {message && <Message type={messageType} msg={message} msgHandler={setMessage} />}
                     <Container customClass="column">
                         <div className={styles.detail_container}>
                             <h1>Projeto: {project.name}</h1>
@@ -146,6 +182,10 @@ function Project() {
                                         <span>Total Utilizado:</span> R$
                                         {project.cost}
                                     </p>
+                                    <p>
+                                        <span>Orçamento Restante:</span> R$
+                                        {project.budget - project.cost}
+                                    </p>
                                 </div>
                             ) : (
                                 <div className={styles.project_info}>
@@ -158,6 +198,7 @@ function Project() {
                             )}
                         </div>
                         <div className={styles.service_form_container}>
+                            {messageService && <Message type={messageServiceType} msg={messageService} msgHandler={setMessageService} />}
                             <h2>Adicione um serviço:</h2>
                             <button
                                 className={styles.btn}
